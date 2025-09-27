@@ -9,6 +9,7 @@ import {
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
+  type FilterFn,
 } from "@tanstack/react-table";
 
 import {
@@ -20,10 +21,42 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { DataTablePagination } from "./data-table-pagination";
 import { DateFilterDropdown } from "./date-filter-dropdown";
 import { DateRange } from "react-day-picker";
+import { isAfter, isBefore, parseISO } from "date-fns";
+
+// 1. Extend the TanStack Table types to include our custom filter function
+declare module "@tanstack/react-table" {
+  interface FilterFns {
+    dateRangeFilter: FilterFn<unknown>;
+  }
+}
+
+// 2. Define the custom date range filter logic
+const dateRangeFilter: FilterFn<unknown> = (row, columnId, value) => {
+  const dateString = row.getValue(columnId) as string;
+  // Convert the string date from the row data (e.g., "2025-09-18") to a Date object.
+  const rowDate = parseISO(dateString);
+  const dateRange = value as DateRange;
+
+  if (!dateRange || (!dateRange.from && !dateRange.to)) {
+    return true; // No filter applied
+  }
+
+  const { from, to } = dateRange;
+
+  const checkFrom = from
+    ? isAfter(rowDate, from) || rowDate.getTime() === from.getTime()
+    : true;
+  const checkTo = to
+    ? isBefore(rowDate, to) || rowDate.getTime() === to.getTime()
+    : true;
+
+  // The row must be on or after 'from' AND on or before 'to'.
+  return checkFrom && checkTo;
+};
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -38,9 +71,45 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [date, setDate] = useState<DateRange | undefined>();
 
+  // 3. Update the columns array to assign the custom filterFn to the "date" accessorKey.
+  const processedColumns = useMemo(() => {
+    return columns.map((col) => {
+      // This assumes 'date' is the accessor key in your data, which it is in your `DailyStockSummary` type.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((col as any).accessorKey === "date") {
+        return {
+          ...col,
+          filterFn: "dateRangeFilter" as const,
+        };
+      }
+      return col;
+    });
+  }, [columns]);
+
+  // 4. Update the columnFilters state whenever a new date range is selected
+  useEffect(() => {
+    setColumnFilters((prev) => {
+      // Remove any previous date filter
+      const newFilters = prev.filter((f) => f.id !== "date");
+
+      // Add the new date filter if a valid range is present
+      if (date && (date.from || date.to)) {
+        newFilters.push({
+          id: "date",
+          value: date, // The value passed to the filterFn is the DateRange object
+        });
+      }
+      return newFilters;
+    });
+  }, [date]);
+
   const table = useReactTable({
     data,
-    columns,
+    columns: processedColumns, // Use the columns with the custom filterFn
+    // 5. Register the custom filter function with the table
+    filterFns: {
+      dateRangeFilter: dateRangeFilter,
+    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
