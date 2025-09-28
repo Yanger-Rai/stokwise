@@ -1,5 +1,6 @@
 // date-filter-dropdown.tsx
 
+import React, { useState } from "react"; // <-- Import useState
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,7 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar as CalendarIcon } from "lucide-react";
+// Import CalendarIcon and CheckIcon
+import { Calendar as CalendarIcon, Check as CheckIcon } from "lucide-react";
 import {
   startOfToday,
   startOfYesterday,
@@ -18,27 +20,49 @@ import {
 } from "date-fns";
 import type { DateRange } from "react-day-picker";
 
+// Define a type for the preset keys/labels
+type FilterPresetKey =
+  | "All Time"
+  | "Today"
+  | "Yesterday"
+  | "Last 7 Days"
+  | "Last 30 Days"
+  | "This Month"
+  | "Last Month";
+
 interface DateFilterDropdownProps {
   setDate: (date: DateRange | undefined) => void;
 }
 
 export function DateFilterDropdown({ setDate }: DateFilterDropdownProps) {
-  const setDateRange = (days: number) => {
+  // Initialize state to track the currently selected preset
+  const [selectedPreset, setSelectedPreset] =
+    useState<FilterPresetKey>("All Time");
+
+  const handleSelect = (
+    key: FilterPresetKey,
+    dateRange: DateRange | undefined
+  ) => {
+    setSelectedPreset(key);
+    setDate(dateRange);
+  };
+
+  const setDateRange = (days: number, key: FilterPresetKey) => {
     const from = subDays(startOfToday(), days - 1);
     const to = startOfToday();
-    setDate({ from, to });
+    handleSelect(key, { from, to });
   };
 
-  const setThisMonth = () => {
+  const setThisMonth = (key: FilterPresetKey) => {
     const from = startOfMonth(new Date());
     const to = endOfMonth(new Date());
-    setDate({ from, to });
+    handleSelect(key, { from, to });
   };
 
-  const setLastMonth = () => {
+  const setLastMonth = (key: FilterPresetKey) => {
     const lastMonthStart = startOfMonth(subMonths(new Date(), 1));
     const lastMonthEnd = endOfMonth(subMonths(new Date(), 1));
-    setDate({ from: lastMonthStart, to: lastMonthEnd });
+    handleSelect(key, { from: lastMonthStart, to: lastMonthEnd });
   };
 
   return (
@@ -46,28 +70,90 @@ export function DateFilterDropdown({ setDate }: DateFilterDropdownProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
           <CalendarIcon />
-          <span>Filter by Date</span>
+          {/* Display the currently selected preset in the button text */}
+          <span>{selectedPreset}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuItem onClick={() => setDateRange(1)}>
-          Today
+        {/* All Time (No filter) */}
+        <DropdownMenuItem
+          onClick={() => handleSelect("All Time", undefined)}
+          className="justify-between" // Align text left, icon right
+        >
+          All Time
+          {selectedPreset === "All Time" && (
+            <CheckIcon className="size-4 ml-2" />
+          )}
         </DropdownMenuItem>
+
+        {/* Today */}
+        <DropdownMenuItem
+          onClick={() => setDateRange(1, "Today")}
+          className="justify-between"
+        >
+          Today
+          {selectedPreset === "Today" && <CheckIcon className="size-4 ml-2" />}
+        </DropdownMenuItem>
+
+        {/* Yesterday */}
         <DropdownMenuItem
           onClick={() =>
-            setDate({ from: startOfYesterday(), to: startOfYesterday() })
+            handleSelect("Yesterday", {
+              from: startOfYesterday(),
+              to: startOfYesterday(),
+            })
           }
+          className="justify-between"
         >
           Yesterday
+          {selectedPreset === "Yesterday" && (
+            <CheckIcon className="size-4 ml-2" />
+          )}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setDateRange(7)}>
+
+        {/* Last 7 Days */}
+        <DropdownMenuItem
+          onClick={() => setDateRange(7, "Last 7 Days")}
+          className="justify-between"
+        >
           Last 7 Days
+          {selectedPreset === "Last 7 Days" && (
+            <CheckIcon className="size-4 ml-2" />
+          )}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setDateRange(30)}>
+
+        {/* Last 30 Days */}
+        <DropdownMenuItem
+          onClick={() => setDateRange(30, "Last 30 Days")}
+          className="justify-between"
+        >
           Last 30 Days
+          {selectedPreset === "Last 30 Days" && (
+            <CheckIcon className="size-4 ml-2" />
+          )}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={setThisMonth}>This Month</DropdownMenuItem>
-        <DropdownMenuItem onClick={setLastMonth}>Last Month</DropdownMenuItem>
+
+        {/* This Month */}
+        <DropdownMenuItem
+          onClick={() => setThisMonth("This Month")}
+          className="justify-between"
+        >
+          This Month
+          {selectedPreset === "This Month" && (
+            <CheckIcon className="size-4 ml-2" />
+          )}
+        </DropdownMenuItem>
+
+        {/* Last Month */}
+        <DropdownMenuItem
+          onClick={() => setLastMonth("Last Month")}
+          className="justify-between"
+        >
+          Last Month
+          {selectedPreset === "Last Month" && (
+            <CheckIcon className="size-4 ml-2" />
+          )}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
