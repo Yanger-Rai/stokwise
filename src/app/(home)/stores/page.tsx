@@ -56,7 +56,7 @@ export default function Stores() {
 
       {/* Filters and View Toggle */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-        <Input placeholder="Search products..." className="max-w-sm" />
+        <Input placeholder="Search stores..." className="max-w-sm" />
         <ToggleGroup
           type="single"
           value={view}
