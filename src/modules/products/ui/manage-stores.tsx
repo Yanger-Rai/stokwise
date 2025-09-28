@@ -25,10 +25,10 @@ function ManageCategories({
     if (!newCategory.trim()) return;
 
     const updatedNavMain = navConfig.navMain.map((item: NavMainItem) => {
-      if (item.title === "Products") {
+      if (item.title === "Stores") {
         const newSubItem = {
           title: newCategory,
-          url: `/products/${newCategory.toLowerCase().replace(/\s+/g, "-")}`,
+          url: `/stores/${newCategory.toLowerCase().replace(/\s+/g, "-")}`,
         };
         // Ensure items array exists
         const items = item.items || [];
