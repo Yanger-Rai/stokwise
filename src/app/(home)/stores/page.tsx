@@ -9,30 +9,8 @@ import { initialNavData } from "@/mock/initialNavData";
 import ManageStores from "@/modules/products/ui/manage-stores";
 
 import StoreCard from "@/modules/stores/ui/store-card";
-import { StoreData } from "@/types/stores.type";
 
 // --- MAIN PAGE COMPONENT ---
-
-const mockStoreData: StoreData[] = [
-  {
-    id: "s1",
-    name: "Downtown Flagship",
-    location: "123 Main St, New York",
-    totalItems: 850,
-  },
-  {
-    id: "s2",
-    name: "West Side Depot",
-    location: "456 Side Rd, Los Angeles",
-    totalItems: 1200,
-  },
-  {
-    id: "s3",
-    name: "Online Warehouse",
-    location: "Remote/Digital",
-    totalItems: 5000,
-  },
-];
 
 export default function Stores() {
   const [view, setView] = useState("grid");
@@ -74,7 +52,7 @@ export default function Stores() {
       </div>
 
       {/* Main Content */}
-      <div>
+      {/* <div>
         {view === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {mockStoreData.map((store) => (
@@ -84,7 +62,7 @@ export default function Stores() {
         ) : (
           <div>Table</div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
