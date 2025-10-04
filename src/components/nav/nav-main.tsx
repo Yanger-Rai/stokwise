@@ -19,6 +19,7 @@ import {
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useStore } from "../store-wrapper";
 
 export function NavMain({
   items,
@@ -35,27 +36,45 @@ export function NavMain({
   }[];
 }) {
   const pathname = usePathname();
+  const { storeSlug } = useStore(); // <-- GET THE SLUG
+
+  // Function to correctly prefix the URL with the storeSlug
+  const getStoreUrl = (url: string) => {
+    // If the URL is just '/', return the slug root: '/mystore'
+    if (url === "/") {
+      return `/${storeSlug}`;
+    }
+    // Otherwise, prepend the slug: '/mystore/products'
+    return `/${storeSlug}${url}`;
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
-          // 3. Determine if the main item or any of its sub-items are active
+          // 1. Get the store-prefixed URL for the main item
+          const mainUrl = getStoreUrl(item.url);
+
+          // 2. Determine active state based on the store-prefixed URL
           const isActive =
-            item.url === "/" ? pathname === "/" : pathname.startsWith(item.url);
+            item.url === "/"
+              ? pathname === mainUrl // Match root dashboard exactly
+              : pathname.startsWith(mainUrl); // Match other pages (e.g., /mystore/products)
 
           return (
             <Collapsible key={item.title} asChild defaultOpen={isActive}>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  // 4. Conditionally apply the variant based on the active state
+                  // 3. Conditionally apply the variant based on the active state
                   className={clsx(
                     isActive ? "bg-primary text-primary-foreground" : "inherite"
                   )}
                   asChild
                   tooltip={item.title}
                 >
-                  <Link href={item.url}>
+                  {/* 4. Use the prefixed URL in the Link component */}
+                  <Link href={mainUrl}>
                     <item.icon />
                     <span>{item.title}</span>
                   </Link>
@@ -71,8 +90,10 @@ export function NavMain({
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         {item.items?.map((subItem) => {
-                          // 5. Determine if the sub-item is active
-                          const isSubActive = pathname === subItem.url;
+                          // 5. Get the store-prefixed URL for the sub-item
+                          const subUrl = getStoreUrl(subItem.url);
+                          // 6. Determine if the sub-item is active
+                          const isSubActive = pathname === subUrl;
 
                           return (
                             <SidebarMenuSubItem key={subItem.title}>
@@ -84,7 +105,8 @@ export function NavMain({
                                 )}
                                 asChild
                               >
-                                <Link href={subItem.url}>
+                                {/* 7. Use the prefixed URL in the Link component */}
+                                <Link href={subUrl}>
                                   <span>{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>

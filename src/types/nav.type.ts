@@ -29,9 +29,19 @@ export type NavMainItem = {
 };
 
 /**
+ * Represents an item in the team nav
+ */
+
+type teamItem = {
+  name: string;
+  logo: LucideIcon;
+  plan: string;
+};
+/**
  * Represents the entire navigation data structure.
  */
 export type NavData = {
   user: User;
+  teams: teamItem[];
   navMain: NavMainItem[];
 };

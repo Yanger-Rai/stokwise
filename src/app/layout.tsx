@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/nav/app-sidebar";
-import Header from "@/components/header";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -21,15 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${dmSans.className} antialiased`}>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <Header />
-            <main>{children}</main>
-          </SidebarInset>
-        </SidebarProvider>
-      </body>
+      <body className={`${dmSans.className} antialiased`}>{children}</body>
     </html>
   );
 }
