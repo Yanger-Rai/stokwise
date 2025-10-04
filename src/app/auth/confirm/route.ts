@@ -8,7 +8,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const next = searchParams.get("next") ?? "/";
+  // Fallback redirect URL for a new user, pointing to the business setup page
+  const next = searchParams.get("next") ?? "/business";
 
   if (token_hash && type) {
     const supabase = await createClient();
@@ -18,8 +19,12 @@ export async function GET(request: NextRequest) {
       token_hash,
     });
     if (!error) {
-      // redirect user to specified redirect URL or root of app
+      // Success! Redirect the user. For a new user, we should send them to
+      // the business creation page, which is now the default 'next' value.
       redirect(next);
+    } else {
+      // CRITICAL DEBUGGING STEP: Log the actual error to the server console.
+      console.error("Supabase OTP Verification Failed:", error.message);
     }
   }
 
