@@ -1,7 +1,9 @@
 import { NavData } from "@/types/nav.type";
 import {
+  AudioWaveform,
   // BookOpen,
   Bot,
+  Command,
   // LifeBuoy,
   // Send,
   // Settings2,
@@ -14,6 +16,23 @@ export const initialNavData: NavData = {
     email: "yanger@stockwise.com",
     avatar: "https://placehold.co/100x100/EBF5FF/3B82F6?text=Y",
   },
+  teams: [
+    {
+      name: "Acme Inc",
+      logo: Command,
+      plan: "Enterprise",
+    },
+    {
+      name: "Acme Corp.",
+      logo: AudioWaveform,
+      plan: "Startup",
+    },
+    {
+      name: "Evil Corp.",
+      logo: Command,
+      plan: "Free",
+    },
+  ],
   navMain: [
     { title: "Dashboard", url: "/", icon: SquareTerminal, items: [] },
     {
