@@ -1,17 +1,27 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/nav/app-sidebar";
 import Header from "@/components/header";
-import StoreWrapper from "@/components/store-wrapper";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import StoreWrapper from "@/context/store-wrapper";
 
-export default function StoreLayout({
+export default async function StoreLayout({
   children,
-  params,
 }: Readonly<{
   children: React.ReactNode;
-  params: { storeSlug: string };
 }>) {
+  // Page Level Security
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return redirect("/login");
+  }
+
   return (
-    <StoreWrapper storeSlug={params.storeSlug}>
+    <StoreWrapper ownerId={user.id}>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>

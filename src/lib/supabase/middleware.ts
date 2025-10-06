@@ -61,7 +61,7 @@ export async function updateSession(request: NextRequest) {
     // User is logged in -> block access to public routes
     if (publicRoutes.includes(request.nextUrl.pathname)) {
       const url = request.nextUrl.clone();
-      url.pathname = "/";
+      url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }
   }

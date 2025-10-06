@@ -12,7 +12,8 @@ type BusinessRow = Database["public"]["Tables"]["businesses"]["Row"];
 // Define the shape of the context state
 interface StoreContextType {
   currentStore: StoreData | null;
-  storeSlug: string;
+  // storeSlug: string;
+  ownerId: string;
   isLoading: boolean;
   businessName: string | null;
   businessId: string | null;
@@ -30,11 +31,11 @@ export function useStore() {
 }
 
 interface StoreWrapperProps {
-  storeSlug: string;
+  ownerId: string;
   children: React.ReactNode;
 }
 
-const StoreWrapper: React.FC<StoreWrapperProps> = ({ storeSlug, children }) => {
+const StoreWrapper: React.FC<StoreWrapperProps> = ({ ownerId, children }) => {
   const supabase = createClient();
 
   // Enhanced state to hold both store and business context
@@ -56,12 +57,16 @@ const StoreWrapper: React.FC<StoreWrapperProps> = ({ storeSlug, children }) => {
       const { data: businessData, error: businessError } = await supabase
         .from("businesses")
         .select("id, name")
-        .eq("slug", storeSlug)
-        .single(); // Assuming slug is unique and only maps to one business
+        .eq("id", ownerId)
+        .single();
 
-      if (businessError || !businessData) {
+      if (businessError) {
+        console.log(" bikash. --- store wrapper", {
+          businessData,
+          businessError,
+        });
         // Handle cases like 404/403 (no business found or RLS denied access)
-        setError(`Business "${storeSlug}" not found or unauthorized.`);
+        setError(`Business not found or unauthorized.`);
         setIsLoading(false);
         return;
       }
@@ -93,21 +98,21 @@ const StoreWrapper: React.FC<StoreWrapperProps> = ({ storeSlug, children }) => {
         setCurrentStore(combinedStore);
       } else {
         // If the business exists but has no stores
-        setError(`No stores found for business "${storeSlug}".`);
+        setError(`No stores found for business "${businessData.name}".`);
       }
       setIsLoading(false);
     }
 
-    if (storeSlug) {
+    if (ownerId) {
       fetchStoreAndBusiness();
     } else {
       setIsLoading(false);
     }
-  }, [storeSlug]); // Add `supabase` to dependency array is technically correct, but safe to omit as it's static
+  }, [ownerId]); // Add `supabase` to dependency array is technically correct, but safe to omit as it's static
 
   const value = {
     currentStore,
-    storeSlug,
+    ownerId,
     isLoading,
     businessName,
     businessId,
