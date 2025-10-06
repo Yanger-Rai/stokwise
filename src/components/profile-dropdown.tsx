@@ -14,6 +14,9 @@ import { Sparkles, BadgeCheck, CreditCard, Bell, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { User } from "@/types/nav.type";
 
+import { logout } from "@/app/(onboarding)/logout/actions";
+import { Button } from "./ui/button";
+
 interface ProfileDropdownProps {
   user: User;
   isMobile?: boolean;
@@ -68,10 +71,16 @@ const ProfileDropdown = ({
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <LogOut />
-          Log out
-        </DropdownMenuItem>
+
+        {/* LOGOUT BUTTON */}
+        <form action={logout}>
+          <DropdownMenuItem asChild>
+            <Button type="submit" variant={"ghost"} className="cursor-pointer">
+              <LogOut />
+              Log out
+            </Button>
+          </DropdownMenuItem>
+        </form>
       </DropdownMenuContent>
     </DropdownMenu>
   );

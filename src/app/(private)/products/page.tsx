@@ -13,66 +13,66 @@ import {
 } from "@/components/ui/dialog";
 
 import { List, LayoutGrid, PlusCircle } from "lucide-react";
-import { Product, ProductFormData } from "@/types/product.types";
 import { initialNavData } from "@/mock/initialNavData";
 import ManageCategories from "@/modules/products/ui/manage-categories";
 import ManageStores from "@/modules/products/ui/manage-stores";
 import ProductCard from "@/modules/products/ui/product-card";
 import ProductTable from "@/modules/products/ui/product-table";
 import AddProductForm from "@/modules/products/ui/add-product-form";
+import { Product } from "@/types/product.type";
 
 // --- MAIN PAGE COMPONENT ---
 
-const initialProducts: Product[] = [
-  {
-    id: "PROD-001",
-    name: "Premium Coffee Beans",
-    category: "Beverages",
-    store: "Store A",
-    sku: "COF-001",
-    stock: 25,
-    minLevel: 50,
-    price: 25.99,
-    imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=☕️",
-  },
-  {
-    id: "PROD-002",
-    name: "Organic Tea Bags",
-    category: "Beverages",
-    store: "Store A",
-    sku: "TEA-002",
-    stock: 60,
-    minLevel: 30,
-    price: 15.49,
-    imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=🍵",
-  },
-  {
-    id: "PROD-003",
-    name: "Artisan Pastries",
-    category: "Food",
-    store: "Store B",
-    sku: "PAS-003",
-    stock: 8,
-    minLevel: 20,
-    price: 4.99,
-    imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=🥐",
-  },
-  {
-    id: "PROD-004",
-    name: "Ceramic Mugs",
-    category: "Accessories",
-    store: "Store B",
-    sku: "MUG-004",
-    stock: 32,
-    minLevel: 15,
-    price: 12.0,
-    imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=Mug",
-  },
-];
+// const initialProducts: Product[] = [
+//   {
+//     id: "PROD-001",
+//     name: "Premium Coffee Beans",
+//     category: "Beverages",
+//     store: "Store A",
+//     sku: "COF-001",
+//     stock: 25,
+//     minLevel: 50,
+//     price: 25.99,
+//     imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=☕️",
+//   },
+//   {
+//     id: "PROD-002",
+//     name: "Organic Tea Bags",
+//     category: "Beverages",
+//     store: "Store A",
+//     sku: "TEA-002",
+//     stock: 60,
+//     minLevel: 30,
+//     price: 15.49,
+//     imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=🍵",
+//   },
+//   {
+//     id: "PROD-003",
+//     name: "Artisan Pastries",
+//     category: "Food",
+//     store: "Store B",
+//     sku: "PAS-003",
+//     stock: 8,
+//     minLevel: 20,
+//     price: 4.99,
+//     imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=🥐",
+//   },
+//   {
+//     id: "PROD-004",
+//     name: "Ceramic Mugs",
+//     category: "Accessories",
+//     store: "Store B",
+//     sku: "MUG-004",
+//     stock: 32,
+//     minLevel: 15,
+//     price: 12.0,
+//     imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=Mug",
+//   },
+// ];
 
 export default function ProductsPage() {
   const [view, setView] = useState("grid");
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
@@ -86,27 +86,6 @@ export default function ProductsPage() {
   const handleOpenAddDialog = () => {
     setEditingProduct(null);
     setIsDialogOpen(true);
-  };
-
-  const handleSaveProduct = (productData: ProductFormData) => {
-    if (editingProduct) {
-      // Update existing product
-      setProducts(
-        products.map((p) =>
-          p.id === editingProduct.id ? { ...p, ...productData } : p
-        )
-      );
-    } else {
-      // Add new product
-      const newProduct: Product = {
-        ...productData,
-        id: `PROD-${Date.now()}`,
-        sku: `SKU-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
-        imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=New",
-      };
-      setProducts([newProduct, ...products]);
-    }
-    setIsDialogOpen(false);
   };
 
   return (
@@ -179,7 +158,7 @@ export default function ProductsPage() {
           </DialogHeader>
           <AddProductForm
             initialData={editingProduct}
-            onSave={handleSaveProduct}
+            onSave={() => {}}
             onClose={() => setIsDialogOpen(false)}
           />
         </DialogContent>

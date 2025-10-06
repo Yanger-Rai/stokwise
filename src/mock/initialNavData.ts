@@ -34,7 +34,7 @@ export const initialNavData: NavData = {
     },
   ],
   navMain: [
-    { title: "Dashboard", url: "/", icon: SquareTerminal, items: [] },
+    { title: "Dashboard", url: "/dashboard", icon: SquareTerminal, items: [] },
     {
       title: "Products",
       url: "/products",

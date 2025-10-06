@@ -1,7 +1,12 @@
+"use client";
+import { useStore } from "@/context/store-wrapper";
 import SectionCards from "@/modules/home/ui/section-cards";
 import StockLedgerTable from "@/modules/home/ui/table/stock-ledger-table";
 
 const Dashboard = () => {
+  const data = useStore();
+  console.log(data);
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
