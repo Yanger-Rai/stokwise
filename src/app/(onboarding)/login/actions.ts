@@ -28,7 +28,7 @@ export async function login(formData: FormData) {
   }
   // After successful loggin, redirect to the main app
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  redirect("/business");
 }
 
 /**

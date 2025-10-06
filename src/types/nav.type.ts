@@ -4,9 +4,10 @@ import type { LucideIcon } from "lucide-react";
  * Represents a user in the application.
  */
 export type User = {
+  id: string;
   name: string;
   email: string;
-  avatar: string;
+  avatarUrl: string;
 };
 
 /**

@@ -1,4 +1,4 @@
-import { NavData } from "@/types/nav.type";
+import { NavData, User } from "@/types/nav.type";
 import {
   AudioWaveform,
   // BookOpen,
@@ -10,12 +10,19 @@ import {
   SquareTerminal,
   Store,
 } from "lucide-react";
-export const initialNavData: NavData = {
-  user: {
-    name: "Yanger",
-    email: "yanger@stockwise.com",
-    avatar: "https://placehold.co/100x100/EBF5FF/3B82F6?text=Y",
-  },
+
+// Simplified mock user for fallback, using the updated User type structure
+export const initialMockUser: User = {
+  id: "mock-user-id",
+  name: "Mock User",
+  email: "mock@stokwise.com",
+  avatarUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=M",
+};
+
+// Simplified initial NavData, focused only on static routes and mock teams
+export const initialNavData: Omit<NavData, "user" | "navMain"> & {
+  navMainStatic: NavData["navMain"];
+} = {
   teams: [
     {
       name: "Acme Inc",
@@ -33,34 +40,12 @@ export const initialNavData: NavData = {
       plan: "Free",
     },
   ],
-  navMain: [
+  navMainStatic: [
     { title: "Dashboard", url: "/dashboard", icon: SquareTerminal, items: [] },
-    {
-      title: "Products",
-      url: "/products",
-      icon: Bot,
-      // Categories will now be dynamically populated here
-      items: [
-        { title: "Low Stock", url: "/products/lowstock" },
-        { title: "Cups", url: "/products/cups" },
-        { title: "Plates", url: "/products/plates" },
-        { title: "Rolls", url: "/products/rolls" },
-      ],
-    },
-    {
-      title: "Stores", // Added Stores
-      url: "/stores",
-      icon: Store,
-      items: [
-        { title: "Store A", url: "/stores/store-a" },
-        { title: "Store B", url: "/stores/store-b" },
-      ],
-    },
+    // Products and Stores will be dynamically generated, keeping placeholder here
+    { title: "Products", url: "/products", icon: Bot, items: [] },
+    { title: "Stores", url: "/stores", icon: Store, items: [] },
     // { title: "Reports", url: "/reports", icon: BookOpen, items: [] },
     // { title: "Settings", url: "/settings", icon: Settings2, items: [] },
   ],
-  // navSecondary: [
-  //   { title: "Support", url: "#", icon: LifeBuoy },
-  //   { title: "Feedback", url: "#", icon: Send },
-  // ],
 };

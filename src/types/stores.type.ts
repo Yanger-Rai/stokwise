@@ -282,3 +282,9 @@ export type NewBusinessData = {
   slug: string;
   owner_id: string;
 };
+
+/**
+ * Represent the expected return type for a intities row
+ */
+export type BusinessRow = Database["public"]["Tables"]["businesses"]["Row"];
+export type CategoryRow = Database["public"]["Tables"]["categories"]["Row"];
