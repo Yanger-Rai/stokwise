@@ -11,6 +11,7 @@ import NewBusiness from "@/modules/business/components/newBusiness";
 
 // import context
 import { useGlobalData } from "@/context/GlobalWrapper";
+import BusinessHeader from "@/modules/business/components/business-header";
 
 const BusinessPage = () => {
   const { currentUser, businesses, isLoading, setCurrentBusiness } =
@@ -34,32 +35,7 @@ const BusinessPage = () => {
   return (
     <div className="min-h-screen">
       {/* header */}
-      <div
-        id="business_header"
-        className="inline-flex items-center justify-between w-full border-b p-4"
-      >
-        <div className="flex items-center gap-4">
-          <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-            <Command className="size-4" />
-          </div>
-          /
-          <div className="flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">
-              {currentUser.name}&apos;s Business
-            </span>
-          </div>
-        </div>
-        <ProfileDropdown user={currentUser}>
-          <Button variant={"ghost"} size={"icon"} className="cursor-pointer">
-            <Avatar className="size-10 rounded-full">
-              <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
-              <AvatarFallback className="rounded-lg">
-                {currentUser.name?.charAt(0) ?? "SW"}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        </ProfileDropdown>
-      </div>
+      <BusinessHeader />
 
       {/* main */}
       <main className="container mx-auto p-4 md:p-6 lg:p-8 space-y-6">
