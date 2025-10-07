@@ -219,15 +219,15 @@ const GlobalWrapper: React.FC<GlobalWrapperProps> = ({ ownerId, children }) => {
   }, [ownerId]);
 
   // --- Loading/Error State Render ---
-  // if (isLoading) {
-  //   return (
-  //     <div className="p-8 space-y-4">
-  //       <Skeleton className="h-8 w-1/4" />
-  //       <Skeleton className="h-4 w-1/2" />
-  //       <Skeleton className="h-96 w-full" />
-  //     </div>
-  //   );
-  // }
+  if (isLoading) {
+    return (
+      <div className="p-8 space-y-4">
+        <Skeleton className="h-8 w-1/4" />
+        <Skeleton className="h-4 w-1/2" />
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
 
   if (error) {
     return (
@@ -264,7 +264,7 @@ const GlobalWrapper: React.FC<GlobalWrapperProps> = ({ ownerId, children }) => {
     stores,
     categories,
     dynamicNav,
-    isLoading: false,
+    isLoading,
     setCurrentBusiness,
     error,
   };

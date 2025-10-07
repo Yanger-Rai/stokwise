@@ -43,8 +43,8 @@ export const initialNavData: Omit<NavData, "user" | "navMain"> & {
   navMainStatic: [
     { title: "Dashboard", url: "/dashboard", icon: SquareTerminal, items: [] },
     // Products and Stores will be dynamically generated, keeping placeholder here
-    { title: "Products", url: "/products", icon: Bot, items: [] },
-    { title: "Stores", url: "/stores", icon: Store, items: [] },
+    // { title: "Products", url: "/products", icon: Bot, items: [] },
+    // { title: "Stores", url: "/stores", icon: Store, items: [] },
     // { title: "Reports", url: "/reports", icon: BookOpen, items: [] },
     // { title: "Settings", url: "/settings", icon: Settings2, items: [] },
   ],
