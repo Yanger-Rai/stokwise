@@ -1,42 +1,41 @@
+"use client";
+import React from "react";
+
 import ProfileDropdown from "@/components/profile-dropdown";
 import { Command } from "lucide-react";
-import React from "react";
-import { initialNavData } from "@/mock/initialNavData";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BusinessCard } from "@/modules/business/components/business-card";
 import NewBusiness from "@/modules/business/components/newBusiness";
 
+// import context
+import { useGlobalData } from "@/context/GlobalWrapper";
+import BusinessHeader from "@/modules/business/components/business-header";
+
 const BusinessPage = () => {
+  const { currentUser, businesses, isLoading, setCurrentBusiness } =
+    useGlobalData();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-red-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">
+            Loading your business...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const hasBusinesses = businesses && businesses.length > 0;
+
   return (
     <div className="min-h-screen">
       {/* header */}
-      <div
-        id="business_header"
-        className="inline-flex items-center justify-between w-full border-b p-4"
-      >
-        <div className="flex items-center gap-4">
-          <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-            <Command className="size-4" />
-          </div>
-          /
-          <div className="flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">Yanger&apos;s Business</span>
-          </div>
-        </div>
-        <ProfileDropdown user={initialNavData.user}>
-          <Button variant={"ghost"} size={"icon"} className="cursor-pointer">
-            <Avatar className="size-10 rounded-full">
-              <AvatarImage
-                src={initialNavData.user.avatar}
-                alt={initialNavData.user.name}
-              />
-              <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-            </Avatar>
-          </Button>
-        </ProfileDropdown>
-      </div>
+      <BusinessHeader />
 
       {/* main */}
       <main className="container mx-auto p-4 md:p-6 lg:p-8 space-y-6">
@@ -50,12 +49,26 @@ const BusinessPage = () => {
         </div>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-          <BusinessCard title="Dispo Store" location="New Market" />
-          <BusinessCard title="Dispo Store" location="New Market" />
-          <BusinessCard title="Dispo Store" location="New Market" />
-          <BusinessCard title="Dispo Store" location="New Market" />
-        </div>
+        {hasBusinesses ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+            {businesses.map((business) => (
+              <BusinessCard
+                key={business.id}
+                title={business.name}
+                // You don't have location data on the business table, so we'll use slug for now
+                location={business.slug}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="py-12 text-center border rounded-lg p-6 bg-muted/50">
+            <h2 className="text-xl font-semibold">No Businesses Found</h2>
+            <p className="text-muted-foreground mt-2">
+              It looks like you haven&apos;t created any businesses yet. Click
+              &quot;New Business&quot; to get started!
+            </p>
+          </div>
+        )}
       </main>
     </div>
   );

@@ -9,23 +9,28 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { NavMain } from "./nav-main";
-// import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
 import { initialNavData } from "@/mock/initialNavData";
 import { BusinessSwitcher } from "./business-switcher";
+import { useGlobalData } from "@/context/GlobalWrapper";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { dynamicNav, currentUser } = useGlobalData();
+
+  // Combine the static navigation items with the dynamically generated ones
+  const fullNav = [...initialNavData.navMainStatic, ...dynamicNav];
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
-        <BusinessSwitcher teams={initialNavData.teams} />
+        <BusinessSwitcher />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={initialNavData.navMain} />
+        <NavMain items={fullNav} />
         {/* <NavSecondary items={initialNavData.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={initialNavData.user} />
+        <NavUser user={currentUser} />
       </SidebarFooter>
     </Sidebar>
   );

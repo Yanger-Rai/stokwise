@@ -1,11 +1,8 @@
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/nav/app-sidebar";
-import Header from "@/components/header";
+import GlobalWrapper from "@/context/GlobalWrapper";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import StoreWrapper from "@/context/store-wrapper";
 
-export default async function StoreLayout({
+export default async function ProtectedLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -20,15 +17,5 @@ export default async function StoreLayout({
     return redirect("/login");
   }
 
-  return (
-    <StoreWrapper ownerId={user.id}>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <Header />
-          <main>{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
-    </StoreWrapper>
-  );
+  return <GlobalWrapper ownerId={user.id}>{children}</GlobalWrapper>;
 }
