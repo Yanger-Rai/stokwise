@@ -1,10 +1,6 @@
 "use client";
 import React from "react";
 
-import ProfileDropdown from "@/components/profile-dropdown";
-import { Command } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BusinessCard } from "@/modules/business/components/business-card";
 import NewBusiness from "@/modules/business/components/newBusiness";
@@ -14,21 +10,7 @@ import { useGlobalData } from "@/context/GlobalWrapper";
 import BusinessHeader from "@/modules/business/components/business-header";
 
 const BusinessPage = () => {
-  const { currentUser, businesses, isLoading, setCurrentBusiness } =
-    useGlobalData();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-red-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">
-            Loading your business...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const { businesses } = useGlobalData();
 
   const hasBusinesses = businesses && businesses.length > 0;
 

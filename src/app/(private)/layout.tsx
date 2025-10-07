@@ -1,6 +1,7 @@
 import GlobalWrapper from "@/context/GlobalWrapper";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { Toaster } from "sonner";
 
 export default async function ProtectedLayout({
   children,
@@ -17,5 +18,10 @@ export default async function ProtectedLayout({
     return redirect("/login");
   }
 
-  return <GlobalWrapper ownerId={user.id}>{children}</GlobalWrapper>;
+  return (
+    <>
+      <Toaster />
+      <GlobalWrapper ownerId={user.id}>{children}</GlobalWrapper>
+    </>
+  );
 }

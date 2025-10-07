@@ -19,6 +19,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   // Combine the static navigation items with the dynamically generated ones
   const fullNav = [...initialNavData.navMainStatic, ...dynamicNav];
+  console.log("bikash ---sidebar", { initialNavData, dynamicNav });
 
   return (
     <Sidebar variant="inset" {...props}>
