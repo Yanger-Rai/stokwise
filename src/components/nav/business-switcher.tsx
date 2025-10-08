@@ -18,14 +18,16 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useGlobalData } from "@/context/GlobalWrapper";
+// --- UPDATED IMPORT ---
+import { useBusinessStore } from "@/store/useBusinessStore";
 import Link from "next/link";
 
 export function BusinessSwitcher() {
   const { isMobile } = useSidebar();
 
+  // --- UPDATED: Get data and action from Zustand store ---
   const { businesses, currentBusiness, setCurrentBusiness, isLoading } =
-    useGlobalData(); // Get data and action from context
+    useBusinessStore(); // Get data and action from store
 
   const activeBusiness = currentBusiness;
   const businessList = businesses || [];
@@ -101,7 +103,7 @@ export function BusinessSwitcher() {
             {businessList.map((business) => (
               <DropdownMenuItem
                 key={business.id}
-                onClick={() => setCurrentBusiness(business)} // Use the context action to switch
+                onClick={() => setCurrentBusiness(business)} // Use the Zustand action to switch
                 className="gap-2 p-2 cursor-pointer"
                 disabled={business.id === activeBusiness.id} // Disable if already active
               >

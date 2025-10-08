@@ -10,16 +10,24 @@ import {
 } from "@/components/ui/sidebar";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import { initialNavData } from "@/mock/initialNavData";
 import { BusinessSwitcher } from "./business-switcher";
-import { useGlobalData } from "@/context/GlobalWrapper";
+import { BusinessState, useBusinessStore } from "@/store/useBusinessStore";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { dynamicNav, currentUser } = useGlobalData();
+  // --- Use selector functions to get only needed slices of state ---
+  const dynamicNav = useBusinessStore((state) => state.dynamicNav);
+  const currentUser = useBusinessStore((state) => state.currentUser);
+  const isLoading = useBusinessStore((state: BusinessState) => state.isLoading);
 
-  // Combine the static navigation items with the dynamically generated ones
-  const fullNav = [...initialNavData.navMainStatic, ...dynamicNav];
-  console.log("bikash ---sidebar", { initialNavData, dynamicNav });
+  // Fallback check: If data is still loading or the user object is null,
+  // don't render the main content. The GlobalWrapper handles the full loading skeleton,
+  // but we must protect against a null user for the NavUser component.
+  if (isLoading || !currentUser) {
+    // Return an empty sidebar structure if possible, or defer to the parent loading state.
+    // Given the page level security, if we reach here and it's not loading, there's an issue,
+    // but returning null is safe and fast.
+    return null;
+  }
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -27,7 +35,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <BusinessSwitcher />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={fullNav} />
+        <NavMain items={dynamicNav} />
         {/* <NavSecondary items={initialNavData.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
