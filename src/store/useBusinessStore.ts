@@ -4,7 +4,7 @@ import { BusinessRow, CategoryRow, StoreData } from "@/types/stores.type";
 import { NavMainItem, User } from "@/types/nav.type";
 import { Bot, SquareTerminal, StoreIcon } from "lucide-react";
 import { fetchBusinessData } from "./fetchers/fetchBusinessdata";
-import { devtools } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
 
 // --- Static Navigation Data (Moved Locally) ---
 const navMainStatic: NavMainItem[] = [
@@ -69,8 +69,8 @@ export interface BusinessState {
 
 export const useBusinessStore = create<BusinessState>()(
   // Wrapping zustant store with devtools so we can make sure of Redux devtool UI in browser
-  devtools(
-    (set, get) => ({
+  persist(
+    devtools((set, get) => ({
       // Initial State
       currentUser: null,
       businesses: [],
@@ -144,11 +144,12 @@ export const useBusinessStore = create<BusinessState>()(
           // --- 2. Fetch all Businesses and determine the active one ---
           const { businesses } = await fetchBusinessData(user.id);
 
-          // const newDynamicNav = buildDynamicNav(stores, categories);
+          const newDynamicNav = buildDynamicNav([], []);
 
           // 3. Update all state slices in one go
           set({
             businesses,
+            dynamicNav: [...navMainStatic, ...newDynamicNav],
             isLoading: false,
           });
         } catch (e) {
@@ -161,9 +162,18 @@ export const useBusinessStore = create<BusinessState>()(
           });
         }
       },
-    }),
+    })),
     {
       name: "BusinessStore", // Naming the store to be seen in redux DevTool UI
+      // 👈 CRITICAL: We now include the necessary arrays and navigation structure for immediate UI stability.
+      partialize: (state: BusinessState): Partial<BusinessState> => ({
+        currentUser: state.currentUser,
+        businesses: state.businesses,
+        currentBusiness: state.currentBusiness,
+        stores: state.stores,
+        categories: state.categories,
+        dynamicNav: state.dynamicNav,
+      }),
     }
   )
 );

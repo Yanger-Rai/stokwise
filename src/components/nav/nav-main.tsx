@@ -1,4 +1,5 @@
-import { ChevronRight, type LucideIcon } from "lucide-react";
+"use client";
+import { ChevronRight } from "lucide-react";
 
 import {
   Collapsible,
@@ -19,31 +20,42 @@ import {
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useBusinessStore } from "@/store/useBusinessStore";
+import { Skeleton } from "../ui/skeleton";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon: LucideIcon;
-    isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
-  }[];
-}) {
+export function NavMain() {
   const pathname = usePathname();
 
+  // Zustant states
+  const isLoading = useBusinessStore((state) => state.isLoading);
+  const navItems = useBusinessStore((state) => state.dynamicNav);
+
+  if (isLoading) {
+    // Return a skeleton while the global data is loading
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <div className="grid w-full p-2 gap-2">
+            <Skeleton className="w-full h-6 bg-gray-200" />
+            <Skeleton className="w-full h-6 bg-gray-200" />
+            <Skeleton className="w-full h-6 bg-gray-200" />
+          </div>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
+
+  console.log("bikash ", { path: pathname });
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => {
+        {navItems.map((item) => {
           // 3. Determine if the main item or any of its sub-items are active
           const isActive =
-            item.url === "/" ? pathname === "/" : pathname.startsWith(item.url);
+            item.url === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname.startsWith(item.url);
 
           return (
             <Collapsible key={item.title} asChild defaultOpen={isActive}>

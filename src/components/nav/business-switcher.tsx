@@ -29,7 +29,7 @@ export function BusinessSwitcher() {
   const router = useRouter();
 
   // --- UPDATED: Get data and action from Zustand store ---
-  const { businesses, currentBusiness, setCurrentBusiness, isLoading } =
+  const { businesses, currentBusiness, setCurrentBusiness } =
     useBusinessStore(); // Get data and action from store
 
   const activeBusiness = currentBusiness;
@@ -40,23 +40,6 @@ export function BusinessSwitcher() {
     setCurrentBusiness(business);
     router.push(`/${business.slug}/dashboard`);
   };
-
-  if (isLoading) {
-    // Return a skeleton while the global data is loading
-    return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <div className="flex items-center w-full p-2 gap-2">
-            <div className="bg-muted size-8 rounded-lg animate-pulse" />
-            <div className="flex-1 space-y-1">
-              <div className="h-4 bg-muted rounded w-3/4 animate-pulse" />
-              <div className="h-3 bg-muted rounded w-1/2 animate-pulse" />
-            </div>
-          </div>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    );
-  }
 
   if (!activeBusiness) {
     // If there are no businesses for the user, link them to the creation page
