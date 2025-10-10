@@ -18,34 +18,28 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useGlobalData } from "@/context/GlobalWrapper";
+// --- UPDATED IMPORT ---
+import { useBusinessStore } from "@/store/useBusinessStore";
 import Link from "next/link";
+import { BusinessRow } from "@/types/stores.type";
+import { useRouter } from "next/navigation";
 
 export function BusinessSwitcher() {
   const { isMobile } = useSidebar();
+  const router = useRouter();
 
-  const { businesses, currentBusiness, setCurrentBusiness, isLoading } =
-    useGlobalData(); // Get data and action from context
+  // --- UPDATED: Get data and action from Zustand store ---
+  const { businesses, currentBusiness, setCurrentBusiness } =
+    useBusinessStore(); // Get data and action from store
 
   const activeBusiness = currentBusiness;
   const businessList = businesses || [];
 
-  if (isLoading) {
-    // Return a skeleton while the global data is loading
-    return (
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <div className="flex items-center w-full p-2 gap-2">
-            <div className="bg-muted size-8 rounded-lg animate-pulse" />
-            <div className="flex-1 space-y-1">
-              <div className="h-4 bg-muted rounded w-3/4 animate-pulse" />
-              <div className="h-3 bg-muted rounded w-1/2 animate-pulse" />
-            </div>
-          </div>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    );
-  }
+  // --- Handler to switch business
+  const handleBusinessSwitch = (business: BusinessRow) => {
+    setCurrentBusiness(business);
+    router.push(`/${business.slug}/dashboard`);
+  };
 
   if (!activeBusiness) {
     // If there are no businesses for the user, link them to the creation page
@@ -101,7 +95,7 @@ export function BusinessSwitcher() {
             {businessList.map((business) => (
               <DropdownMenuItem
                 key={business.id}
-                onClick={() => setCurrentBusiness(business)} // Use the context action to switch
+                onClick={() => handleBusinessSwitch(business)} // Use the Zustand action to switch
                 className="gap-2 p-2 cursor-pointer"
                 disabled={business.id === activeBusiness.id} // Disable if already active
               >

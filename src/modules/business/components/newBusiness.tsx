@@ -11,10 +11,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PlusIcon, LockIcon, UnlockIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner"; // Assuming 'sonner' is installed and used for toasts
 import { createSlug } from "@/lib/utils";
 import { createNewBusiness } from "@/app/(private)/business/actions/createNewBusiness";
+import { useBusinessStore } from "@/store/useBusinessStore";
 
 // Define the shape of the form data
 interface FormData {
@@ -36,7 +36,8 @@ function NewBusiness() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSlugLocked, setIsSlugLocked] = useState(false);
 
-  const router = useRouter();
+  // --- UPDATED: Get refetchData from Zustand store ---
+  const refetchData = useBusinessStore((state) => state.refetchData);
 
   // Use a functional approach to update form data and clear specific field errors
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,7 +136,8 @@ function NewBusiness() {
         });
         // --- END NEW ---
 
-        router.refresh();
+        // --- IMPORTANT: Manually trigger re-fetch of global data to update the UI ---
+        await refetchData(); // Use await here to ensure state is updated before next render
       }
     } catch (error) {
       console.error("Client Error during Submission:", error);
