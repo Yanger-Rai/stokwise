@@ -131,7 +131,7 @@ export const useBusinessStore = create<BusinessState>()(
           // --- 1. Set User Data ---
           const userName =
             user.user_metadata.full_name || user.email?.split("@")[0] || "User";
-          const userAvatar = user.user_metadata.avatar_url || null;
+          const userAvatar = user.user_metadata.avatar_url || "";
 
           const userData: User = {
             id: user.id,

@@ -29,6 +29,7 @@ export function NavMain() {
   // Zustant states
   const isLoading = useBusinessStore((state) => state.isLoading);
   const navItems = useBusinessStore((state) => state.dynamicNav);
+  const currentBusiness = useBusinessStore((state) => state.currentBusiness);
 
   if (isLoading) {
     // Return a skeleton while the global data is loading
@@ -45,17 +46,20 @@ export function NavMain() {
     );
   }
 
-  console.log("bikash ", { path: pathname });
+  // Determine the current slug, using zustand as the source of truth. Do not use useParams
+  const currentSlug = currentBusiness?.slug;
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
         {navItems.map((item) => {
-          // 3. Determine if the main item or any of its sub-items are active
-          const isActive =
-            item.url === "/dashboard"
-              ? pathname === "/dashboard"
-              : pathname.startsWith(item.url);
+          // 1. Prepand the slug to the main URL
+          const baseSegment = currentSlug ? `/${currentSlug}` : "";
+          const fullItemUrl = `${baseSegment}${item.url}`;
+
+          // 2. Check for active state against the full url
+          const isActive = pathname.startsWith(fullItemUrl);
 
           return (
             <Collapsible key={item.title} asChild defaultOpen={isActive}>
@@ -68,7 +72,7 @@ export function NavMain() {
                   asChild
                   tooltip={item.title}
                 >
-                  <Link href={item.url}>
+                  <Link href={fullItemUrl}>
                     <item.icon />
                     <span>{item.title}</span>
                   </Link>
@@ -84,8 +88,10 @@ export function NavMain() {
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         {item.items?.map((subItem) => {
-                          // 5. Determine if the sub-item is active
-                          const isSubActive = pathname === subItem.url;
+                          // 5. Build the full URl for the sub-item as well
+                          const fullSubItemUrl = `${baseSegment}${subItem.url}`;
+                          // 6. Determine if the sub item is active
+                          const isSubActive = pathname === fullSubItemUrl;
 
                           return (
                             <SidebarMenuSubItem key={subItem.title}>
@@ -97,7 +103,7 @@ export function NavMain() {
                                 )}
                                 asChild
                               >
-                                <Link href={subItem.url}>
+                                <Link href={fullSubItemUrl}>
                                   <span>{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>

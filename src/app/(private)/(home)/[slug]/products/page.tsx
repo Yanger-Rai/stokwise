@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 
 import { List, LayoutGrid, PlusCircle } from "lucide-react";
-import { initialNavData } from "@/mock/initialNavData";
 import ManageCategories from "@/modules/products/ui/manage-categories";
 import ManageStores from "@/modules/products/ui/manage-stores";
 import ProductCard from "@/modules/products/ui/product-card";
@@ -76,7 +75,7 @@ export default function ProductsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  const [navConfig, setNavConfig] = useState(initialNavData);
+  const [navConfig, setNavConfig] = useState([]);
 
   const handleOpenEditDialog = (product: Product) => {
     setEditingProduct(product);
