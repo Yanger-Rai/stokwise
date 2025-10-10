@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 
 import { useBusinessStore, BusinessState } from "@/store/useBusinessStore";
 
-import { Skeleton } from "@/components/ui/skeleton";
-
 // ----------------------------------------------------
 // 4. GLOBAL WRAPPER COMPONENT
 // ----------------------------------------------------
@@ -19,7 +17,6 @@ const GlobalWrapper: React.FC<GlobalWrapperProps> = ({ ownerId, children }) => {
   const [hasInitialized, setHasInitialized] = useState(false);
 
   // Select state and actions from the Zustand store with explicit typing
-  const isLoading = useBusinessStore((state: BusinessState) => state.isLoading);
   const error = useBusinessStore((state: BusinessState) => state.error);
 
   const fetchGlobalData = useBusinessStore(
@@ -50,18 +47,7 @@ const GlobalWrapper: React.FC<GlobalWrapperProps> = ({ ownerId, children }) => {
     // Subsequent refreshes are handled by fetchGlobalData/refetchData which update the Zustand state.
   }, [ownerId, hasInitialized, fetchGlobalData]); // <<< Added fetchGlobalData to dependency array
 
-  // --- Loading/Error State Render ---
-  // We use the Zustand isLoading/error state directly for UI rendering
-  // if (isLoading) {
-  //   return (
-  //     <div className="p-8 space-y-4">
-  //       <Skeleton className="h-8 w-1/4" />
-  //       <Skeleton className="h-4 w-1/2" />
-  //       <Skeleton className="h-96 w-full" />
-  //     </div>
-  //   );
-  // }
-
+  // A global initialization error page
   if (error) {
     return (
       <div className="p-8 text-center text-red-500">
@@ -76,8 +62,5 @@ const GlobalWrapper: React.FC<GlobalWrapperProps> = ({ ownerId, children }) => {
   // The state itself is provided via the Zustand hook, not via Context Provider.
   return <>{children}</>;
 };
-
-// Exporting the old hook name for compatibility (though it will be removed/replaced in other components)
-export { useBusinessStore as useGlobalData };
 
 export default GlobalWrapper;

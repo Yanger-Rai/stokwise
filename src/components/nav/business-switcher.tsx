@@ -21,9 +21,12 @@ import {
 // --- UPDATED IMPORT ---
 import { useBusinessStore } from "@/store/useBusinessStore";
 import Link from "next/link";
+import { BusinessRow } from "@/types/stores.type";
+import { useRouter } from "next/navigation";
 
 export function BusinessSwitcher() {
   const { isMobile } = useSidebar();
+  const router = useRouter();
 
   // --- UPDATED: Get data and action from Zustand store ---
   const { businesses, currentBusiness, setCurrentBusiness, isLoading } =
@@ -31,6 +34,12 @@ export function BusinessSwitcher() {
 
   const activeBusiness = currentBusiness;
   const businessList = businesses || [];
+
+  // --- Handler to switch business
+  const handleBusinessSwitch = (business: BusinessRow) => {
+    setCurrentBusiness(business);
+    router.push(`/${business.slug}/dashboard`);
+  };
 
   if (isLoading) {
     // Return a skeleton while the global data is loading
@@ -103,7 +112,7 @@ export function BusinessSwitcher() {
             {businessList.map((business) => (
               <DropdownMenuItem
                 key={business.id}
-                onClick={() => setCurrentBusiness(business)} // Use the Zustand action to switch
+                onClick={() => handleBusinessSwitch(business)} // Use the Zustand action to switch
                 className="gap-2 p-2 cursor-pointer"
                 disabled={business.id === activeBusiness.id} // Disable if already active
               >

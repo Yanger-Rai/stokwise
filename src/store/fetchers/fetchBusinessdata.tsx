@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import { BusinessRow, CategoryRow, StoreData } from "@/types/stores.type";
+import { BusinessRow } from "@/types/stores.type";
 
 /**
  * Fetches all businesses for the owner, finds the active business,
@@ -7,20 +7,13 @@ import { BusinessRow, CategoryRow, StoreData } from "@/types/stores.type";
  * @param ownerId The ID of the authenticated user.
  * @param activeBusinessId Optional ID of the currently selected business.
  */
-export async function fetchBusinessData(
-  ownerId: string,
-  activeBusinessId: string | null = null
-): Promise<{
+export async function fetchBusinessData(ownerId: string): Promise<{
   businesses: BusinessRow[];
-  activeBusiness: BusinessRow | null;
-  stores: StoreData[];
-  categories: CategoryRow[];
 }> {
   const supabase = createClient();
 
   const defaultReturn = {
     businesses: [],
-    activeBusiness: null,
     stores: [],
     categories: [],
   };
@@ -38,64 +31,7 @@ export async function fetchBusinessData(
 
   const businesses = businessList || [];
 
-  // 2. Determine Active Business
-  let activeBusiness: BusinessRow | null = null;
-
-  if (activeBusinessId) {
-    activeBusiness = businesses.find((b) => b.id === activeBusinessId) || null;
-  }
-
-  // If no business is explicitly selected or the selected one isn't valid, use the first one.
-  if (!activeBusiness && businesses.length > 0) {
-    activeBusiness = businesses[0];
-  }
-
-  if (!activeBusiness) {
-    return defaultReturn;
-  }
-
-  // 3. Fetch Stores and Categories for the Active Business
-
-  // FIX: Removed invalid count aggregation (*, totalItems:count(*))
-  // The 'count' column is not a standard column on the 'stores' table.
-  // To keep the StoreData type compatible, we will default totalItems to 0 in the mapping.
-  const [storesResult, categoriesResult] = await Promise.all([
-    supabase
-      // FIX: Use new type inference / generic syntax on .select<T>()
-      .from("stores")
-      .select<string, Omit<StoreData, "totalItems">>()
-      .eq("business_id", activeBusiness.id),
-
-    supabase
-      // FIX: Use new type inference / generic syntax on .select<T>()
-      .from("categories")
-      .select<string, CategoryRow>()
-      .eq("business_id", activeBusiness.id),
-  ]);
-
-  if (storesResult.error)
-    console.error("Supabase Error fetching stores:", storesResult.error);
-  if (categoriesResult.error)
-    console.error(
-      "Supabase Error fetching categories:",
-      categoriesResult.error
-    );
-
-  // Convert the fetched Store data to the expected StoreData format (adding the mock field)
-  const combinedStores: StoreData[] = (storesResult.data || []).map(
-    (store) => ({
-      ...store,
-      totalItems: 0, // Mocked until proper aggregation logic is implemented
-      slug: store.name.toLowerCase().replace(/\s+/g, "-"),
-    })
-  );
-
-  const categories = categoriesResult.data || [];
-
   return {
     businesses,
-    activeBusiness,
-    stores: combinedStores,
-    categories,
   };
 }

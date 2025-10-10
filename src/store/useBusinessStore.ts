@@ -87,14 +87,7 @@ export const useBusinessStore = create<BusinessState>()(
        * Switches the currently active business and triggers a data refresh.
        */
       setCurrentBusiness: (business: BusinessRow) => {
-        // 1. Update the state immediately
         set({ currentBusiness: business });
-        const ownerId = get().currentUser?.id;
-
-        if (ownerId) {
-          // 2. Trigger a full data refresh to load new stores/categories
-          get().fetchGlobalData(ownerId, business.id);
-        }
       },
 
       /**
@@ -112,7 +105,7 @@ export const useBusinessStore = create<BusinessState>()(
       /**
        * Fetches all user and business-specific data from Supabase.
        */
-      fetchGlobalData: async (ownerId, activeBusinessId = null) => {
+      fetchGlobalData: async (ownerId) => {
         set({ isLoading: true, error: null });
 
         try {
@@ -149,20 +142,13 @@ export const useBusinessStore = create<BusinessState>()(
           set({ currentUser: userData });
 
           // --- 2. Fetch all Businesses and determine the active one ---
-          const { businesses, stores, categories } = await fetchBusinessData(
-            user.id,
-            activeBusinessId
-          );
+          const { businesses } = await fetchBusinessData(user.id);
 
-          const newDynamicNav = buildDynamicNav(stores, categories);
+          // const newDynamicNav = buildDynamicNav(stores, categories);
 
           // 3. Update all state slices in one go
           set({
             businesses,
-            currentBusiness: null,
-            stores,
-            categories,
-            dynamicNav: newDynamicNav,
             isLoading: false,
           });
         } catch (e) {

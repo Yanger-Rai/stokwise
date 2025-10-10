@@ -1,20 +1,31 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { BusinessCard } from "@/modules/business/components/business-card";
 import NewBusiness from "@/modules/business/components/newBusiness";
-
-// import context
-import BusinessHeader from "@/modules/business/components/business-header";
-import { useBusinessStore } from "@/store/useBusinessStore";
 import LoadingPage from "@/components/loadingPage";
+import BusinessHeader from "@/modules/business/components/business-header";
+
+import { useBusinessStore } from "@/store/useBusinessStore";
+import { BusinessRow } from "@/types/stores.type";
 
 const BusinessPage = () => {
   const businesses = useBusinessStore((state) => state.businesses);
   const loading = useBusinessStore((state) => state.isLoading);
+  const setCurrentBusiness = useBusinessStore(
+    (state) => state.setCurrentBusiness
+  );
+
+  const router = useRouter();
 
   const hasBusinesses = businesses && businesses.length > 0;
+
+  const handleSelectBusiness = (business: BusinessRow) => {
+    setCurrentBusiness(business);
+    router.push(`/${business.slug}/dashboard`);
+  };
 
   return (
     <div className="min-h-screen">
@@ -40,9 +51,8 @@ const BusinessPage = () => {
             {businesses.map((business) => (
               <BusinessCard
                 key={business.id}
-                title={business.name}
-                // You don't have location data on the business table, so we'll use slug for now
-                location={business.slug}
+                business={business}
+                onClick={() => handleSelectBusiness(business)}
               />
             ))}
           </div>
