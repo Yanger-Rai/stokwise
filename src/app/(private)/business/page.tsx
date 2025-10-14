@@ -10,14 +10,11 @@ import BusinessHeader from "@/modules/business/components/business-header";
 
 import { useBusinessStore } from "@/store/useBusinessStore";
 import { BusinessRow } from "@/types/stores.type";
-import { deleteBusiness } from "./actions/deleteBusiness";
-import { toast } from "sonner";
 import { FileStack } from "lucide-react";
 
 const BusinessPage = () => {
   const router = useRouter();
 
-  const refetchData = useBusinessStore((state) => state.refetchData);
   const businesses = useBusinessStore((state) => state.businesses);
   const loading = useBusinessStore((state) => state.isLoading);
   const setCurrentBusiness = useBusinessStore(
@@ -36,43 +33,6 @@ const BusinessPage = () => {
   const handleSelectBusiness = async (business: BusinessRow) => {
     setCurrentBusiness(business);
     router.push(`/${business.slug}/dashboard`);
-  };
-
-  const handleDeleteBusiness = async (business: BusinessRow) => {
-    // Add a simple confirmation step for a destructive action
-    if (
-      !window.confirm(
-        `Are you sure you want to permanently delete the business "${business.name}"? This action cannot be undone.`
-      )
-    ) {
-      return;
-    }
-
-    // Optional: Show a loading toast immediately
-    const loadingToastId = toast.loading(`Deleting ${business.name}...`);
-
-    try {
-      const response = await deleteBusiness(business);
-
-      // Check for the specific error returned by the Server Action
-      if (response.success) {
-        toast.success(`SUCCESS: ${business.name} deleted`, {
-          id: loadingToastId,
-        });
-
-        await refetchData(); // Use await here to ensure state is updated before next render
-      } else {
-        // Use the error message returned from the server action
-        toast.error(`ERROR: ${response.error}`, { id: loadingToastId });
-      }
-    } catch (err) {
-      // Catch unexpected network/JS errors
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      toast.error(
-        `ERROR: Failed to delete ${business.name}. Details: ${errorMessage}`,
-        { id: loadingToastId }
-      );
-    }
   };
 
   return (
@@ -114,7 +74,6 @@ const BusinessPage = () => {
                   key={business.id}
                   business={business}
                   onClick={() => handleSelectBusiness(business)}
-                  onDelete={() => handleDeleteBusiness(business)}
                 />
               ))
             )}

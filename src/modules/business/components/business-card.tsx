@@ -11,17 +11,13 @@ import {
 import { BusinessRow } from "@/types/stores.type";
 import { ChevronRight, Trash } from "lucide-react";
 import React from "react";
+import { DeleteBusinessDialog } from "./delete-business";
 
 interface BusinessCardProps {
   business: BusinessRow;
   onClick: () => void;
-  onDelete: () => void;
 }
-export const BusinessCard = ({
-  business,
-  onClick,
-  onDelete,
-}: BusinessCardProps) => {
+export const BusinessCard = ({ business, onClick }: BusinessCardProps) => {
   return (
     <Card className="group flex flex-col hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[4px] hover:-translate-y-[4px] transition-all">
       <CardHeader>
@@ -40,10 +36,12 @@ export const BusinessCard = ({
       </CardHeader>
       <CardContent className="flex-grow space-y-4"></CardContent>
       <CardFooter className="justify-end">
-        <Button size={"icon"} variant="ghost" onClick={onDelete}>
-          <Trash />
-          <span className="sr-only">Delete</span>
-        </Button>
+        <DeleteBusinessDialog business={business}>
+          <Button size={"icon"} variant="ghost">
+            <Trash />
+            <span className="sr-only">Delete</span>
+          </Button>
+        </DeleteBusinessDialog>
       </CardFooter>
     </Card>
   );
