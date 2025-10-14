@@ -8,43 +8,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { NavData, NavMainItem } from "@/types/nav.type";
-import { Settings } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useBusinessStore } from "@/store/useBusinessStore";
+import { Loader, Settings, Trash2 } from "lucide-react";
 import React, { useState } from "react";
 
-function ManageCategories({
-  navConfig,
-  setNavConfig,
-}: {
-  navConfig: NavData;
-  setNavConfig: React.Dispatch<React.SetStateAction<NavData>>;
-}) {
+function ManageCategories() {
+  const stores = useBusinessStore((state) => state.stores);
+
   const [newCategory, setNewCategory] = useState("");
-
-  const handleAddCategory = () => {
-    if (!newCategory.trim()) return;
-
-    const updatedNavMain = navConfig.navMain.map((item: NavMainItem) => {
-      if (item.title === "Stores") {
-        const newSubItem = {
-          title: newCategory,
-          url: `/stores/${newCategory.toLowerCase().replace(/\s+/g, "-")}`,
-        };
-        // Ensure items array exists
-        const items = item.items || [];
-        return { ...item, items: [...items, newSubItem] };
-      }
-      return item;
-    });
-
-    setNavConfig({ ...navConfig, navMain: updatedNavMain });
-    setNewCategory(""); // Reset input
-  };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button variant={stores.length !== 0 ? "outline" : "default"}>
           <Settings className="mr-2 h-4 w-4" /> Manage Stores
         </Button>
       </DialogTrigger>
@@ -63,9 +40,50 @@ function ManageCategories({
               onChange={(e) => setNewCategory(e.target.value)}
               placeholder="New category name"
             />
-            <Button onClick={handleAddCategory}>Add</Button>
+            <Button onClick={() => {}}>Add</Button>
           </div>
         </div>
+        {/* {error && (
+          <p className="text-red-500 text-sm p-2 bg-red-900/10 rounded-lg">
+            Error: {error}
+          </p>
+        )} */}
+        <ScrollArea className="h-80 rounded-md border">
+          {stores.length > 0 ? (
+            <ul role="list" className="divide-y divide-muted">
+              {stores.map((store) => (
+                <li key={store.id} className="flex justify-between gap-x-6 p-3">
+                  <div className="flex min-w-0 gap-x-4">
+                    <p className="text-sm/6 font-semibold text-primary">
+                      {store.name}
+                    </p>
+                  </div>
+                  <div className="shrink-0 sm:flex sm:flex-col sm:items-end">
+                    <Button
+                      variant="destructive"
+                      size={"icon"}
+                      // onClick={() => handleDeleteCategory(store.id, store.name)}
+                      // disabled={isPendingDelete && deletingId === store.id}
+                    >
+                      {/* {isPendingDelete && deletingId === store.id ? (
+                        <Loader className=" animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )} */}
+                      <span className="sr-only">Delete {store.name}</span>
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="p-2">
+              <p className="text-muted-foreground text-center">
+                You have no stores. Begin by clicking on the add button
+              </p>
+            </div>
+          )}
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

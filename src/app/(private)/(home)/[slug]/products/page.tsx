@@ -55,10 +55,10 @@ export default function ProductsPage() {
         </div>
         <div className="flex items-center gap-2">
           <ManageCategories />
-          {/* <ManageStores navConfig={navConfig} setNavConfig={setNavConfig} /> */}
+          <ManageStores />
           <Button
             onClick={handleOpenAddDialog}
-            disabled={categories.length === 0}
+            disabled={categories.length === 0 || stores.length === 0}
           >
             <PlusCircle className="mr-2 h-4 w-4" /> Add Product
           </Button>

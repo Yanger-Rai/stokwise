@@ -97,7 +97,7 @@ function ManageCategories() {
           <Settings className="mr-2 h-4 w-4" /> Manage Categories
         </Button>
       </DialogTrigger>
-      <DialogContent className="">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Manage Categories</DialogTitle>
           <DialogDescription>
