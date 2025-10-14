@@ -22,6 +22,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useBusinessStore } from "@/store/useBusinessStore";
 import { Skeleton } from "../ui/skeleton";
+import { useEffect } from "react";
 
 export function NavMain() {
   const pathname = usePathname();
@@ -30,6 +31,15 @@ export function NavMain() {
   const isLoading = useBusinessStore((state) => state.isLoading);
   const navItems = useBusinessStore((state) => state.dynamicNav);
   const currentBusiness = useBusinessStore((state) => state.currentBusiness);
+  const fetchCategoriesData = useBusinessStore(
+    (state) => state.fetchGlobalStoreCategories
+  );
+
+  useEffect(() => {
+    if (currentBusiness?.id) {
+      fetchCategoriesData(currentBusiness.id);
+    }
+  }, [currentBusiness?.id, fetchCategoriesData]);
 
   if (isLoading) {
     // Return a skeleton while the global data is loading
@@ -80,7 +90,12 @@ export function NavMain() {
                 {item.items?.length ? (
                   <>
                     <CollapsibleTrigger asChild>
-                      <SidebarMenuAction className="data-[state=open]:rotate-90">
+                      <SidebarMenuAction
+                        className={clsx(
+                          "data-[state=open]:rotate-90",
+                          isActive && "text-white"
+                        )}
+                      >
                         <ChevronRight />
                         <span className="sr-only">Toggle</span>
                       </SidebarMenuAction>

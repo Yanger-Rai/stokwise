@@ -22,7 +22,7 @@ const BusinessPage = () => {
 
   const hasBusinesses = businesses && businesses.length > 0;
 
-  const handleSelectBusiness = (business: BusinessRow) => {
+  const handleSelectBusiness = async (business: BusinessRow) => {
     setCurrentBusiness(business);
     router.push(`/${business.slug}/dashboard`);
   };
