@@ -13,70 +13,25 @@ import {
 } from "@/components/ui/dialog";
 
 import { List, LayoutGrid, PlusCircle } from "lucide-react";
-import { initialNavData } from "@/mock/initialNavData";
 import ManageCategories from "@/modules/products/ui/manage-categories";
 import ManageStores from "@/modules/products/ui/manage-stores";
 import ProductCard from "@/modules/products/ui/product-card";
 import ProductTable from "@/modules/products/ui/product-table";
 import AddProductForm from "@/modules/products/ui/add-product-form";
 import { Product } from "@/types/product.type";
+import { useBusinessStore } from "@/store/useBusinessStore";
 
 // --- MAIN PAGE COMPONENT ---
 
-// const initialProducts: Product[] = [
-//   {
-//     id: "PROD-001",
-//     name: "Premium Coffee Beans",
-//     category: "Beverages",
-//     store: "Store A",
-//     sku: "COF-001",
-//     stock: 25,
-//     minLevel: 50,
-//     price: 25.99,
-//     imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=☕️",
-//   },
-//   {
-//     id: "PROD-002",
-//     name: "Organic Tea Bags",
-//     category: "Beverages",
-//     store: "Store A",
-//     sku: "TEA-002",
-//     stock: 60,
-//     minLevel: 30,
-//     price: 15.49,
-//     imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=🍵",
-//   },
-//   {
-//     id: "PROD-003",
-//     name: "Artisan Pastries",
-//     category: "Food",
-//     store: "Store B",
-//     sku: "PAS-003",
-//     stock: 8,
-//     minLevel: 20,
-//     price: 4.99,
-//     imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=🥐",
-//   },
-//   {
-//     id: "PROD-004",
-//     name: "Ceramic Mugs",
-//     category: "Accessories",
-//     store: "Store B",
-//     sku: "MUG-004",
-//     stock: 32,
-//     minLevel: 15,
-//     price: 12.0,
-//     imageUrl: "https://placehold.co/100x100/EBF5FF/3B82F6?text=Mug",
-//   },
-// ];
-
 export default function ProductsPage() {
+  // Zustant
+  const stores = useBusinessStore((state) => state.stores);
+  const categories = useBusinessStore((state) => state.categories);
+
   const [view, setView] = useState("grid");
   const [products, setProducts] = useState<Product[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
-  const [navConfig, setNavConfig] = useState(initialNavData);
 
   const handleOpenEditDialog = (product: Product) => {
     setEditingProduct(product);
@@ -99,9 +54,12 @@ export default function ProductsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <ManageCategories navConfig={navConfig} setNavConfig={setNavConfig} />
-          <ManageStores navConfig={navConfig} setNavConfig={setNavConfig} />
-          <Button onClick={handleOpenAddDialog}>
+          <ManageCategories />
+          {/* <ManageStores navConfig={navConfig} setNavConfig={setNavConfig} /> */}
+          <Button
+            onClick={handleOpenAddDialog}
+            disabled={categories.length === 0}
+          >
             <PlusCircle className="mr-2 h-4 w-4" /> Add Product
           </Button>
         </div>
@@ -160,6 +118,8 @@ export default function ProductsPage() {
             initialData={editingProduct}
             onSave={() => {}}
             onClose={() => setIsDialogOpen(false)}
+            availableStores={stores}
+            availableCategories={categories}
           />
         </DialogContent>
       </Dialog>

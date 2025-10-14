@@ -22,9 +22,15 @@ export type Product = {
  */
 export type ProductFormData = {
   name: string;
-  category_name: string; // We'll need the category name to find/create the category_id
-  store_name: string; // We'll need the store name to find the store_id
-  stock: number;
-  minLevel: number;
-  price: number; // Selling price
+  // --- Fields needed for products table lookup (IDs derived from these names) ---
+  category_name: string;
+  store_name: string;
+
+  // --- Fields needed for products table insertion ---
+  sku: string; // SKU is part of the product definition
+  price: number; // Base price for the product definition
+
+  // --- Fields needed for inventory table insertion/update ---
+  stock: number; // Maps to inventory.stock_quantity
+  minLevel: number; // Maps to inventory.min_level
 };

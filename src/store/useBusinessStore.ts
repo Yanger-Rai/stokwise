@@ -5,6 +5,7 @@ import { NavMainItem, User } from "@/types/nav.type";
 import { Bot, SquareTerminal, StoreIcon } from "lucide-react";
 import { fetchBusinessData } from "./fetchers/fetchBusinessdata";
 import { devtools, persist } from "zustand/middleware";
+import { fetchCategoriesData } from "./fetchers/fetchStoresCategories";
 
 // --- Static Navigation Data (Moved Locally) ---
 const navMainStatic: NavMainItem[] = [
@@ -63,6 +64,7 @@ export interface BusinessState {
   ) => Promise<void>;
   setCurrentBusiness: (business: BusinessRow) => void;
   refetchData: () => Promise<void>;
+  fetchGlobalStoreCategories: (currentBusinessId: string) => Promise<void>;
 }
 
 // --- Zustand Store Definition ---
@@ -131,7 +133,7 @@ export const useBusinessStore = create<BusinessState>()(
           // --- 1. Set User Data ---
           const userName =
             user.user_metadata.full_name || user.email?.split("@")[0] || "User";
-          const userAvatar = user.user_metadata.avatar_url || null;
+          const userAvatar = user.user_metadata.avatar_url || "";
 
           const userData: User = {
             id: user.id,
@@ -141,7 +143,7 @@ export const useBusinessStore = create<BusinessState>()(
           };
           set({ currentUser: userData });
 
-          // --- 2. Fetch all Businesses and determine the active one ---
+          // --- 2. Fetch all Businesses ---
           const { businesses } = await fetchBusinessData(user.id);
 
           const newDynamicNav = buildDynamicNav([], []);
@@ -159,6 +161,32 @@ export const useBusinessStore = create<BusinessState>()(
               e instanceof Error ? e.message : "Unknown error"
             }`,
             isLoading: false,
+          });
+        }
+      },
+
+      /**
+       * Fetch all stores and categories data based on current business
+       */
+      fetchGlobalStoreCategories: async (currentBusinessId: string) => {
+        set({ isLoading: true, error: null });
+
+        try {
+          const { categories } = await fetchCategoriesData(currentBusinessId);
+          const newDynamicNav = buildDynamicNav([], categories);
+
+          set({
+            dynamicNav: [...navMainStatic, ...newDynamicNav],
+            isLoading: false,
+            categories,
+          });
+        } catch (err) {
+          console.error("Gloabl Categories Fetch error:", err);
+          set({
+            isLoading: false,
+            error: `Failed to load categories data: ${
+              err instanceof Error ? err.message : "Unknown error"
+            }`,
           });
         }
       },

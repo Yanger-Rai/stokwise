@@ -149,7 +149,7 @@ export type Database = {
           created_at: string;
           name: string;
           sku: string;
-          base_price: number;
+          price: number;
           image_url: string | null;
         };
         Insert: {
@@ -159,7 +159,7 @@ export type Database = {
           created_at?: string;
           name: string;
           sku: string;
-          base_price: number;
+          price: number;
           image_url?: string | null;
         };
         Update: {
@@ -169,7 +169,7 @@ export type Database = {
           created_at?: string;
           name?: string;
           sku?: string;
-          base_price?: number;
+          price?: number;
           image_url?: string | null;
         };
         Relationships: [
@@ -198,7 +198,6 @@ export type Database = {
           product_id: string;
           stock_quantity: number;
           min_level: number;
-          selling_price: number | null;
           last_updated: string;
         };
         Insert: {
@@ -207,7 +206,6 @@ export type Database = {
           product_id: string;
           stock_quantity: number;
           min_level: number;
-          selling_price?: number | null;
           last_updated?: string;
         };
         Update: {
@@ -216,7 +214,6 @@ export type Database = {
           product_id?: string;
           stock_quantity?: number;
           min_level?: number;
-          selling_price?: number | null;
           last_updated?: string;
         };
         Relationships: [
@@ -288,3 +285,6 @@ export type NewBusinessData = {
  */
 export type BusinessRow = Database["public"]["Tables"]["businesses"]["Row"];
 export type CategoryRow = Database["public"]["Tables"]["categories"]["Row"];
+
+// New type for the insert payload, used in the Server Action
+export type NewCategory = Database["public"]["Tables"]["categories"]["Insert"];
