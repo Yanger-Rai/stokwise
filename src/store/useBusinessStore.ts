@@ -5,7 +5,7 @@ import { NavMainItem, User } from "@/types/nav.type";
 import { Bot, SquareTerminal, StoreIcon } from "lucide-react";
 import { fetchBusinessData } from "./fetchers/fetchBusinessdata";
 import { devtools, persist } from "zustand/middleware";
-import { fetchCategoriesData } from "./fetchers/fetchStoresCategories";
+import { fetchCategoriesData } from "./fetchers/fetchCategoriesData";
 
 // --- Static Navigation Data (Moved Locally) ---
 const navMainStatic: NavMainItem[] = [
@@ -146,12 +146,9 @@ export const useBusinessStore = create<BusinessState>()(
           // --- 2. Fetch all Businesses ---
           const { businesses } = await fetchBusinessData(user.id);
 
-          const newDynamicNav = buildDynamicNav([], []);
-
           // 3. Update all state slices in one go
           set({
             businesses,
-            dynamicNav: [...navMainStatic, ...newDynamicNav],
             isLoading: false,
           });
         } catch (e) {
@@ -174,6 +171,8 @@ export const useBusinessStore = create<BusinessState>()(
         try {
           const { categories } = await fetchCategoriesData(currentBusinessId);
           const newDynamicNav = buildDynamicNav([], categories);
+
+          console.log(" yanger ", { categories });
 
           set({
             dynamicNav: [...navMainStatic, ...newDynamicNav],

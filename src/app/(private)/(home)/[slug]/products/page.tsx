@@ -58,7 +58,7 @@ export default function ProductsPage() {
           <ManageStores />
           <Button
             onClick={handleOpenAddDialog}
-            disabled={categories.length === 0 || stores.length === 0}
+            disabled={categories.length === 0}
           >
             <PlusCircle className="mr-2 h-4 w-4" /> Add Product
           </Button>

@@ -36,10 +36,11 @@ export function NavMain() {
   );
 
   useEffect(() => {
+    console.log(" yanger ", currentBusiness);
     if (currentBusiness?.id) {
       fetchCategoriesData(currentBusiness.id);
     }
-  }, [currentBusiness?.id, fetchCategoriesData]);
+  }, [currentBusiness, fetchCategoriesData]);
 
   if (isLoading) {
     // Return a skeleton while the global data is loading
