@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 import { Edit, Trash } from "lucide-react";
-import { Product } from "@/types/product.types";
+import { Product } from "@/types/product.type";
 
 interface ProductTableProps {
   products: Product[];
@@ -27,7 +27,7 @@ function ProductTable({ products }: ProductTableProps) {
             <TableHead>SKU</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Store</TableHead> {/* Add Store header */}
-            <TableHead>Price</TableHead>
+            {/* <TableHead>Price</TableHead> */}
             <TableHead>Stock</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -42,7 +42,7 @@ function ProductTable({ products }: ProductTableProps) {
                 <TableCell>{product.sku}</TableCell>
                 <TableCell>{product.category}</TableCell>
                 <TableCell>{product.store}</TableCell> {/* Show store */}
-                <TableCell>₹{product.price.toFixed(2)}</TableCell>
+                {/* <TableCell>₹{product.price.toFixed(2)}</TableCell> */}
                 <TableCell>{product.stock}</TableCell>
                 <TableCell>
                   <Badge variant={isLowStock ? "destructive" : "secondary"}>

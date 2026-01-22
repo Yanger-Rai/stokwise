@@ -1,6 +1,7 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -18,6 +19,8 @@ import ManageStores from "@/modules/products/ui/manage-stores";
 import ProductCard from "@/modules/products/ui/product-card";
 import ProductTable from "@/modules/products/ui/product-table";
 import AddProductForm from "@/modules/products/ui/add-product-form";
+import { addProduct } from "./actions/addProduct";
+import { updateProduct } from "./actions/updateProduct";
 import { Product } from "@/types/product.type";
 import { useBusinessStore } from "@/store/useBusinessStore";
 
@@ -27,9 +30,32 @@ export default function ProductsPage() {
   // Zustant
   const stores = useBusinessStore((state) => state.stores);
   const categories = useBusinessStore((state) => state.categories);
+  const currentBusiness = useBusinessStore((state) => state.currentBusiness);
 
   const [view, setView] = useState("grid");
   const [products, setProducts] = useState<Product[]>([]);
+  // Fetch products using server action
+  const fetchProducts = async () => {
+    if (!currentBusiness?.id) {
+      setProducts([]);
+      return;
+    }
+    const { fetchProductsForBusiness } = await import(
+      "./actions/fetchProducts"
+    );
+    const result = await fetchProductsForBusiness(currentBusiness.id);
+    if (!result.success) {
+      console.error("Failed to fetch products:", result.error);
+      setProducts([]);
+      return;
+    }
+    setProducts(result.products);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [currentBusiness?.id]);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
@@ -50,7 +76,7 @@ export default function ProductsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Products</h1>
           <p className="text-muted-foreground">
-            Manage your product catalog and inventory.
+            Showing your product catalog and inventory.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -92,7 +118,9 @@ export default function ProductsPage() {
               <ProductCard
                 key={product.id}
                 product={product}
-                onEdit={handleOpenEditDialog}
+                onDelete={(id) =>
+                  setProducts((prev) => prev.filter((p) => p.id !== id))
+                }
               />
             ))}
           </div>
@@ -116,7 +144,20 @@ export default function ProductsPage() {
           </DialogHeader>
           <AddProductForm
             initialData={editingProduct}
-            onSave={() => {}}
+            onSave={async (productData) => {
+              let result;
+              if (editingProduct) {
+                result = await updateProduct(editingProduct.id, productData);
+              } else {
+                result = await addProduct(productData);
+              }
+              if (result.success) {
+                fetchProducts();
+                setIsDialogOpen(false);
+              } else {
+                alert(result.error);
+              }
+            }}
             onClose={() => setIsDialogOpen(false)}
             availableStores={stores}
             availableCategories={categories}

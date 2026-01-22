@@ -149,7 +149,7 @@ export type Database = {
           created_at: string;
           name: string;
           sku: string;
-          price: number;
+          // price removed for inventory-only focus
           image_url: string | null;
         };
         Insert: {
@@ -159,7 +159,7 @@ export type Database = {
           created_at?: string;
           name: string;
           sku: string;
-          price: number;
+          // price removed for inventory-only focus
           image_url?: string | null;
         };
         Update: {
@@ -169,7 +169,7 @@ export type Database = {
           created_at?: string;
           name?: string;
           sku?: string;
-          price?: number;
+          // price removed for inventory-only focus
           image_url?: string | null;
         };
         Relationships: [
@@ -265,7 +265,7 @@ export type Product = Database["public"]["Tables"]["products"]["Row"] & {
   // Fields that come from the inventory table
   stock: number;
   minLevel: number;
-  price: number; // This will map to 'selling_price' or 'base_price'
+  // price removed for inventory-only focus
   store_id: string;
   category: string; // This would typically be looked up by joining with categories table
   store: string; // This would typically be looked up by joining with stores table

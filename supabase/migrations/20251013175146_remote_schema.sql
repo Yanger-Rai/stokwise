@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS "public"."inventory" (
     "product_id" "uuid" NOT NULL,
     "stock_quantity" integer NOT NULL,
     "min_level" integer NOT NULL,
-    "selling_price" numeric,
+    -- "selling_price" removed for inventory-only focus
     "last_updated" timestamp with time zone DEFAULT "now"() NOT NULL
 );
 
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS "public"."products" (
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "name" "text" NOT NULL,
     "sku" "text" NOT NULL,
-    "base_price" numeric NOT NULL,
+    -- "base_price" removed for inventory-only focus
     "image_url" "text",
     "store_id" "uuid" NOT NULL
 );

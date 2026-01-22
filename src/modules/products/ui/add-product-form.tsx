@@ -14,6 +14,7 @@ import {
 import { Product, ProductFormData } from "@/types/product.type"; // Corrected import from .types to .type
 import { CategoryRow, StoreData } from "@/types/stores.type";
 import { createSlug } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 interface AddProductFormProps {
   initialData?: Product | null;
@@ -34,44 +35,62 @@ function AddProductForm({
   // State for fields in the ProductFormData structure
   const [name, setName] = useState("");
   const [sku, setSku] = useState("");
-  const [categoryName, setCategoryName] = useState(""); // Maps to category_name
-  const [storeName, setStoreName] = useState(""); // Maps to store_name
+  const [categoryId, setCategoryId] = useState(""); // Maps to category_id
+  const [storeId, setStoreId] = useState(""); // Maps to store_id
   const [stock, setStock] = useState(0);
   const [minLevel, setMinLevel] = useState(10);
-  // Renamed from sellingPrice/basePrice to just price
-  const [price, setPrice] = useState(0);
 
   useEffect(() => {
+    console.log(initialData);
     if (initialData) {
       setName(initialData.name);
       setSku(initialData.sku);
-      setCategoryName(initialData.category); // Using denormalized name
-      setStoreName(initialData.store); // Using denormalized name
+      setCategoryId(initialData.category_id);
+      setStoreId(initialData.store_id);
       setStock(initialData.stock);
       setMinLevel(initialData.minLevel);
-      setPrice(initialData.price); // Now using the single price field
+
+      // Debug: Check if IDs match available options
+      const catMatch = availableCategories.some(
+        (cat) => cat.id === initialData.category_id
+      );
+      const storeMatch = availableStores.some(
+        (store) => store.id === initialData.store_id
+      );
+      if (!catMatch) {
+        console.warn(
+          "Category ID not found in availableCategories:",
+          initialData.category_id,
+          availableCategories
+        );
+      }
+      if (!storeMatch) {
+        console.warn(
+          "Store ID not found in availableStores:",
+          initialData.store_id,
+          availableStores
+        );
+      }
     } else {
       setName("");
       setSku("");
-      setCategoryName("");
-      setStoreName("");
+      setCategoryId("");
+      setStoreId("");
       setStock(0);
       setMinLevel(10);
-      setPrice(0);
     }
-  }, [initialData]);
+  }, [initialData, availableCategories, availableStores]);
 
   // Auto-generate SKU when name changes for new products
   useEffect(() => {
-    if (!initialData && name.trim().length > 0) {
+    if (name.trim().length > 0) {
       setSku(createSlug(name).toUpperCase());
     }
   }, [name, initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !categoryName || !storeName || !sku) {
-      // Use toast instead of alert per instructions
+    if (!name || !categoryId || !storeId || !sku) {
       console.error("Please fill in Name, SKU, Category, and Store.");
       return;
     }
@@ -79,11 +98,10 @@ function AddProductForm({
     const productData: ProductFormData = {
       name,
       sku,
-      category_name: categoryName,
-      store_name: storeName,
+      category_id: categoryId,
+      store_id: storeId,
       stock,
       minLevel,
-      price: price,
     };
 
     onSave(productData);
@@ -112,6 +130,7 @@ function AddProductForm({
         </Label>
         <Input
           id="sku"
+          disabled={true}
           value={sku}
           onChange={(e) => setSku(e.target.value.toUpperCase())}
           className="col-span-3"
@@ -124,13 +143,16 @@ function AddProductForm({
         <Label htmlFor="category" className="text-right">
           Category*
         </Label>
-        <Select onValueChange={setCategoryName} value={categoryName}>
+        <Select
+          onValueChange={setCategoryId}
+          value={initialData?.category_id || categoryId}
+        >
           <SelectTrigger className="col-span-3">
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
             {availableCategories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.name}>
+              <SelectItem key={cat.id} value={cat.id}>
                 {cat.name}
               </SelectItem>
             ))}
@@ -143,13 +165,16 @@ function AddProductForm({
         <Label htmlFor="store" className="text-right">
           Store*
         </Label>
-        <Select onValueChange={setStoreName} value={storeName}>
+        <Select
+          onValueChange={setStoreId}
+          value={initialData?.store_id || storeId}
+        >
           <SelectTrigger className="col-span-3">
             <SelectValue placeholder="Select a store" />
           </SelectTrigger>
           <SelectContent>
             {availableStores.map((store) => (
-              <SelectItem key={store.id} value={store.name}>
+              <SelectItem key={store.id} value={store.id}>
                 {store.name}
               </SelectItem>
             ))}
@@ -157,25 +182,13 @@ function AddProductForm({
         </Select>
       </div>
 
-      {/* Price Input (formerly Selling Price) */}
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label htmlFor="price" className="text-right">
-          Price (₹)
-        </Label>
-        <Input
-          id="price"
-          type="number"
-          value={price}
-          onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
-          className="col-span-3"
-          placeholder="e.g., 199.99"
-        />
-      </div>
+      {/* INVENTORY INFO */}
+      <Separator className="my-4" />
 
       {/* Stock Quantity Input */}
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="stock" className="text-right">
-          Initial Stock
+          Current Stock
         </Label>
         <Input
           id="stock"
@@ -201,6 +214,8 @@ function AddProductForm({
           min="0"
         />
       </div>
+
+      <Separator className="my-4" />
 
       <div className="flex justify-end gap-2 mt-4">
         <Button type="button" variant="outline" onClick={onClose}>

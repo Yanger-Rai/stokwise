@@ -22,8 +22,8 @@ function ManageCategories() {
   const currentBusinessId = useBusinessStore(
     (state) => state.currentBusiness?.id
   );
-  const fetchCategoriesData = useBusinessStore(
-    (state) => state.fetchGlobalStoreCategories
+  const fetchInventoryData = useBusinessStore(
+    (state) => state.fetchGlobalInventoryData
   );
 
   const [isOpen, setIsOpen] = useState(false);
@@ -53,7 +53,7 @@ function ManageCategories() {
       if (result.success) {
         // 1. Update local store state with the newly created category (including ID)
         if (result.category) {
-          fetchCategoriesData(currentBusinessId);
+          fetchInventoryData(currentBusinessId);
         }
 
         // 2. Reset input
@@ -78,7 +78,7 @@ function ManageCategories() {
 
       if (result.success && currentBusinessId) {
         // 1. Update local store state by removing the category
-        fetchCategoriesData(currentBusinessId);
+        fetchInventoryData(currentBusinessId);
         toast.success(`SUCCESS: Deleted category ${categoryName}`);
       } else {
         // 2. Display error message

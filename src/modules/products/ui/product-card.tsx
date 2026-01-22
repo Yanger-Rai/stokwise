@@ -15,14 +15,29 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 import { Edit, Trash, Check, Package2 } from "lucide-react";
-import { Product } from "@/types/product.types";
+
+import { Product } from "@/types/product.type";
+import UpdateProduct from "./update-product";
+import { deleteProductById } from "@/app/(private)/(home)/[slug]/products/actions/deleteProduct";
 
 interface ProductCardProps {
   product: Product;
-  onEdit: (product: Product) => void;
+  onDelete?: (id: string) => void;
 }
 
-function ProductCard({ product, onEdit }: ProductCardProps) {
+function ProductCard({ product, onDelete }: ProductCardProps) {
+  const handleDelete = async () => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${product.name}?`
+    );
+    if (!confirmed) return;
+    const result = await deleteProductById(product.id);
+    if (result.success) {
+      if (onDelete) onDelete(product.id);
+    } else {
+      alert(result.error || "Failed to delete product.");
+    }
+  };
   const [currentStock, setCurrentStock] = useState(product.stock);
   const isLowStock = currentStock <= product.minLevel;
 
@@ -34,7 +49,7 @@ function ProductCard({ product, onEdit }: ProductCardProps) {
   };
 
   return (
-    <Card className="flex flex-col cursor-pointer hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[4px] hover:-translate-y-[4px] transition-all">
+    <Card className="flex flex-col hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-[4px] hover:-translate-y-[4px] transition-all">
       <CardHeader>
         <div className="flex justify-between items-start">
           <Package2 className="h-12 w-12 text-cyan-600 rounded-lg bg-cyan-50 p-1" />
@@ -44,10 +59,8 @@ function ProductCard({ product, onEdit }: ProductCardProps) {
             className="h-12 w-12 object-contain rounded-lg bg-gray-100 p-1"
           /> */}
           <div className="flex gap-1">
-            <Button variant="ghost" size="icon" onClick={() => onEdit(product)}>
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon">
+            <UpdateProduct product={product} />
+            <Button variant="ghost" size="icon" onClick={handleDelete}>
               <Trash className="h-4 w-4" />
             </Button>
           </div>
@@ -67,35 +80,16 @@ function ProductCard({ product, onEdit }: ProductCardProps) {
             {isLowStock ? "Low Stock" : "In Stock"}
           </Badge>
         </div>
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <span className="text-sm">Min Level:</span>
           <span className="font-medium">{product.minLevel}</span>
-        </div>
+        </div> */}
+        {/* Price removed for inventory-only focus */}
         <div className="flex items-center justify-between">
-          <span className="text-sm">Price:</span>
-          <span className="font-medium">₹{product.price.toFixed(2)}</span>
+          <span className="text-sm">Current Stock:</span>
+          <span className="font-medium">{product.stock}</span>
         </div>
       </CardContent>
-      <CardFooter className="bg-muted/40 p-4">
-        <div className="w-full flex items-center gap-2">
-          <label
-            htmlFor={`stock-${product.id}`}
-            className="text-sm font-medium"
-          >
-            Total Stock:
-          </label>
-          <Input
-            id={`stock-${product.id}`}
-            type="number"
-            value={currentStock}
-            onChange={(e) => setCurrentStock(parseInt(e.target.value, 10) || 0)}
-            className="h-8 w-20"
-          />
-          <Button size="icon" className="h-8 w-8" onClick={handleStockUpdate}>
-            <Check className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardFooter>
     </Card>
   );
 }

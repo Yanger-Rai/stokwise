@@ -23,6 +23,7 @@ import { usePathname } from "next/navigation";
 import { useBusinessStore } from "@/store/useBusinessStore";
 import { Skeleton } from "../ui/skeleton";
 import { useEffect } from "react";
+import React from "react";
 
 export function NavMain() {
   const pathname = usePathname();
@@ -31,16 +32,15 @@ export function NavMain() {
   const isLoading = useBusinessStore((state) => state.isLoading);
   const navItems = useBusinessStore((state) => state.dynamicNav);
   const currentBusiness = useBusinessStore((state) => state.currentBusiness);
-  const fetchCategoriesData = useBusinessStore(
-    (state) => state.fetchGlobalStoreCategories
+  const fetchGlobalInventoryData = useBusinessStore(
+    (state) => state.fetchGlobalInventoryData
   );
 
   useEffect(() => {
-    console.log(" yanger ", currentBusiness);
     if (currentBusiness?.id) {
-      fetchCategoriesData(currentBusiness.id);
+      fetchGlobalInventoryData(currentBusiness.id);
     }
-  }, [currentBusiness, fetchCategoriesData]);
+  }, [currentBusiness, fetchGlobalInventoryData]);
 
   if (isLoading) {
     // Return a skeleton while the global data is loading
@@ -72,6 +72,20 @@ export function NavMain() {
           // 2. Check for active state against the full url
           const isActive = pathname.startsWith(fullItemUrl);
 
+          // icon renderer: handle component, React element, or module object with default
+          const renderIcon = () => {
+            if (React.isValidElement(item.icon)) return item.icon;
+            if (typeof item.icon === "function") {
+              const IconComp = item.icon as React.ComponentType<any>;
+              return <IconComp />;
+            }
+            if (item.icon && typeof item.icon === "object") {
+              const Comp = (item.icon as any).default ?? item.icon;
+              if (typeof Comp === "function") return <Comp />;
+            }
+            return null;
+          };
+
           return (
             <Collapsible key={item.title} asChild defaultOpen={isActive}>
               <SidebarMenuItem>
@@ -84,7 +98,8 @@ export function NavMain() {
                   tooltip={item.title}
                 >
                   <Link href={fullItemUrl}>
-                    <item.icon />
+                    {/* <item.icon /> */}
+                    {renderIcon()}
                     <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>

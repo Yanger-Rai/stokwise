@@ -6,6 +6,7 @@ import { Bot, SquareTerminal, StoreIcon } from "lucide-react";
 import { fetchBusinessData } from "./fetchers/fetchBusinessdata";
 import { devtools, persist } from "zustand/middleware";
 import { fetchCategoriesData } from "./fetchers/fetchCategoriesData";
+import { fetchStoresData } from "./fetchers/fetchStoresData";
 
 // --- Static Navigation Data (Moved Locally) ---
 const navMainStatic: NavMainItem[] = [
@@ -64,13 +65,12 @@ export interface BusinessState {
   ) => Promise<void>;
   setCurrentBusiness: (business: BusinessRow) => void;
   refetchData: () => Promise<void>;
-  fetchGlobalStoreCategories: (currentBusinessId: string) => Promise<void>;
+  fetchGlobalInventoryData: (currentBusinessId: string) => Promise<void>; // <-- Renamed
 }
 
 // --- Zustand Store Definition ---
 
 export const useBusinessStore = create<BusinessState>()(
-  // Wrapping zustant store with devtools so we can make sure of Redux devtool UI in browser
   persist(
     devtools((set, get) => ({
       // Initial State
@@ -163,27 +163,35 @@ export const useBusinessStore = create<BusinessState>()(
       },
 
       /**
-       * Fetch all stores and categories data based on current business
+       * Fetch all inventory-related data (stores and categories) for the current business
        */
-      fetchGlobalStoreCategories: async (currentBusinessId: string) => {
+      fetchGlobalInventoryData: async (currentBusinessId: string) => {
         set({ isLoading: true, error: null });
 
         try {
-          const { categories } = await fetchCategoriesData(currentBusinessId);
-          const newDynamicNav = buildDynamicNav([], categories);
+          // Fetch both stores and categories in parallel
+          const [storesResponse, categoriesResponse] = await Promise.all([
+            fetchStoresData(currentBusinessId),
+            fetchCategoriesData(currentBusinessId),
+          ]);
 
-          console.log(" yanger ", { categories });
+          const stores = storesResponse.stores || [];
+          const categories = categoriesResponse.categories || [];
+
+          // Build dynamic navigation with both stores and categories
+          const newDynamicNav = buildDynamicNav(stores, categories);
 
           set({
             dynamicNav: [...navMainStatic, ...newDynamicNav],
             isLoading: false,
+            stores,
             categories,
           });
         } catch (err) {
-          console.error("Gloabl Categories Fetch error:", err);
+          console.error("Global Inventory Data Fetch error:", err);
           set({
             isLoading: false,
-            error: `Failed to load categories data: ${
+            error: `Failed to load inventory data: ${
               err instanceof Error ? err.message : "Unknown error"
             }`,
           });
@@ -191,8 +199,7 @@ export const useBusinessStore = create<BusinessState>()(
       },
     })),
     {
-      name: "BusinessStore", // Naming the store to be seen in redux DevTool UI
-      // 👈 CRITICAL: We now include the necessary arrays and navigation structure for immediate UI stability.
+      name: "BusinessStore",
       partialize: (state: BusinessState): Partial<BusinessState> => ({
         currentUser: state.currentUser,
         businesses: state.businesses,

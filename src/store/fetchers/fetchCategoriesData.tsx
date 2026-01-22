@@ -9,11 +9,9 @@ import { CategoryRow } from "@/types/stores.type";
 export async function fetchCategoriesData(
   activeBusinessId: string | null = null
 ): Promise<{
-  // stores: StoreData[];
   categories: CategoryRow[];
 }> {
   const defaultReturn = {
-    // stores: [],
     categories: [],
   };
 

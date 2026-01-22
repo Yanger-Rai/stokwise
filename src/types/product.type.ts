@@ -9,10 +9,11 @@ export type Product = {
   category: string; // Category name (denormalized)
   store: string; // Store name (denormalized)
   store_id: string; // Store ID (from inventory table)
+  category_id: string;
   sku: string;
   stock: number; // From inventory table (stock_quantity)
   minLevel: number; // From inventory table
-  price: number; // From inventory table (selling_price)
+  // price removed for inventory-only focus
   imageUrl: string | null; // From products table
 };
 
@@ -22,15 +23,9 @@ export type Product = {
  */
 export type ProductFormData = {
   name: string;
-  // --- Fields needed for products table lookup (IDs derived from these names) ---
-  category_name: string;
-  store_name: string;
-
-  // --- Fields needed for products table insertion ---
-  sku: string; // SKU is part of the product definition
-  price: number; // Base price for the product definition
-
-  // --- Fields needed for inventory table insertion/update ---
-  stock: number; // Maps to inventory.stock_quantity
-  minLevel: number; // Maps to inventory.min_level
+  category_id: string;
+  store_id: string;
+  sku: string;
+  stock: number;
+  minLevel: number;
 };
